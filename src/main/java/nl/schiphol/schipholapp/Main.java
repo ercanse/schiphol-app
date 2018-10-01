@@ -22,8 +22,7 @@ public class Main {
             HttpResponse response = this.getResponse();
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 JSONArray flights = this.getFlights(response);
-                System.out.println("found " + flights.size() + " flights");
-                flights.forEach(System.out::println);
+                this.printFlights(flights);
             } else {
                 System.out.println(
                         "Oops something went wrong\nHttp response code: " + response.getStatusLine().getStatusCode() + "\nHttp response body: "
@@ -48,5 +47,16 @@ public class Main {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
         return (JSONArray) jsonObject.get("flights");
+    }
+
+    private void printFlights(JSONArray flights) {
+        System.out.println("found " + flights.size() + " flights");
+        for (Object flightObject : flights) {
+            JSONObject flight = (JSONObject) flightObject;
+            Object gate = flight.get("gate");
+            Object route = flight.get("route");
+            System.out.println(gate);
+            System.out.println(route);
+        }
     }
 }
