@@ -53,10 +53,16 @@ public class Main {
         System.out.println("found " + flights.size() + " flights");
         for (Object flightObject : flights) {
             JSONObject flight = (JSONObject) flightObject;
+
+            Object scheduleTime = flight.get("scheduleTime");
             Object gate = flight.get("gate");
-            Object route = flight.get("route");
+            JSONObject route = (JSONObject) flight.get("route");
+            JSONArray destinations = (JSONArray) route.get("destinations");
+
+            System.out.println(scheduleTime);
             System.out.println(gate);
-            System.out.println(route);
+            System.out.println(destinations);
+            System.out.println();
         }
     }
 }
