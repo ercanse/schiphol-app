@@ -15,6 +15,8 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Main {
     private final String APP_ID = "c977b768";
@@ -24,15 +26,18 @@ public class Main {
 
     private Map<Character, Integer> flightsByPier;
 
+    private Map<Character, SortedMap<String, Integer>> flightsByAirlineByPier;
+
     public Main() {
         this.flightsByPier = new HashMap<>();
+        this.flightsByAirlineByPier = new HashMap<>();
     }
 
     public void process() {
         try {
             int currentPage = 0;
             JSONArray flights = new JSONArray();
-            while (currentPage < 50) {
+            while (currentPage < 20) {
                 HttpResponse response = this.getResponse(currentPage);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     flights.addAll(this.getFlights(response));
@@ -45,6 +50,8 @@ public class Main {
             }
             this.printFlights(flights);
             this.printFlightsByPier();
+            System.out.println();
+            this.printFlightsByAirlineByPier();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -79,15 +86,19 @@ public class Main {
         for (Object flightObject : flights) {
             JSONObject flight = (JSONObject) flightObject;
 
-            Object gate = flight.get("gate");
-            if (gate == null) {
+            Object gateObject = flight.get("gate");
+            Object airlineObject = flight.get("prefixICAO");
+            if (gateObject == null || airlineObject == null) {
                 continue;
             }
 
+            String gate = gateObject.toString();
             String flightDirection = flight.get("flightDirection").toString();
             String flightName = flight.get("flightName").toString();
             String scheduleDate = flight.get("scheduleDate").toString();
             String scheduleTime = flight.get("scheduleTime").toString();
+            String airline = airlineObject.toString();
+
             JSONObject route = (JSONObject) flight.get("route");
             JSONArray destinations = (JSONArray) route.get("destinations");
 
@@ -100,16 +111,25 @@ public class Main {
             System.out.println(destinations);
             System.out.println();
 
-            char pier = gate.toString().charAt(0);
-            if (!this.flightsByPier.containsKey(pier)) {
-                this.flightsByPier.put(pier, 0);
-            }
+            char pier = gate.charAt(0);
+            this.flightsByPier.putIfAbsent(pier, 0);
             this.flightsByPier.put(pier, this.flightsByPier.get(pier) + 1);
+
+            this.flightsByAirlineByPier.putIfAbsent(pier, new TreeMap<>());
+            SortedMap<String, Integer> map = this.flightsByAirlineByPier.get(pier);
+            map.putIfAbsent(airline, 0);
+            map.put(airline, map.get(airline) + 1);
         }
     }
 
     private void printFlightsByPier() {
         for (Map.Entry entry : this.flightsByPier.entrySet()) {
+            System.out.println(entry.getKey() + " pier: " + entry.getValue() + " flights");
+        }
+    }
+
+    private void printFlightsByAirlineByPier() {
+        for (Map.Entry entry : this.flightsByAirlineByPier.entrySet()) {
             System.out.println(entry.getKey() + " pier: " + entry.getValue() + " flights");
         }
     }
