@@ -54,12 +54,23 @@ public class Main {
         for (Object flightObject : flights) {
             JSONObject flight = (JSONObject) flightObject;
 
-            Object scheduleTime = flight.get("scheduleTime");
             Object gate = flight.get("gate");
+            if (gate == null) {
+                continue;
+            }
+
+            String flightDirection = flight.get("flightDirection").toString();
+            String flightName = flight.get("flightName").toString();
+            String scheduleDate = flight.get("scheduleDate").toString();
+            String scheduleTime = flight.get("scheduleTime").toString();
             JSONObject route = (JSONObject) flight.get("route");
             JSONArray destinations = (JSONArray) route.get("destinations");
 
+            System.out.println(flightName);
+            String flightDirectionString = flightDirection.equals("d") ? "Departure:" : "Arrival:";
+            System.out.print(flightDirectionString + " " + scheduleDate + " ");
             System.out.println(scheduleTime);
+
             System.out.println(gate);
             System.out.println(destinations);
             System.out.println();

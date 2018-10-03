@@ -7,6 +7,7 @@
     <groupId>nl.schiphol</groupId>
     <artifactId>schiphol-app</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+
     <build>
         <plugins>
             <plugin>
