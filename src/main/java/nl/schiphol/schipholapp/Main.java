@@ -20,6 +20,7 @@ public class Main {
     public void process() {
         try {
             HttpResponse response = this.getResponse();
+            // TODO: keep retrieving pages until 'last' page has been retrieved, based on data in 'link' header
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 JSONArray flights = this.getFlights(response);
                 this.printFlights(flights);
@@ -28,8 +29,6 @@ public class Main {
                         "Oops something went wrong\nHttp response code: " + response.getStatusLine().getStatusCode() + "\nHttp response body: "
                                 + EntityUtils.toString(response.getEntity()));
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Oops something went wrong\nPlease insert your APP_ID and APP_KEY as arguments");
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -50,7 +49,7 @@ public class Main {
     }
 
     private void printFlights(JSONArray flights) {
-        System.out.println("found " + flights.size() + " flights");
+        System.out.println("Found " + flights.size() + " flights.");
         for (Object flightObject : flights) {
             JSONObject flight = (JSONObject) flightObject;
 
