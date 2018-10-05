@@ -1,4 +1,4 @@
-package nl.schiphol.schipholapp;
+package nl.schiphol.schipholapp.analyze;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class Main {
+public class Analyzer {
     private String appId;
     private String appKey;
 
@@ -30,7 +30,7 @@ public class Main {
 
     private Map<Character, Map<String, Integer>> flightsByAirlineByPier;
 
-    public Main() {
+    public Analyzer() {
         this.loadProperties();
         this.flightsByPier = new HashMap<>();
         this.flightsByAirlineByPier = new HashMap<>();
