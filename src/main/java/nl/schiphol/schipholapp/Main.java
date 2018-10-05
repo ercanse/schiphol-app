@@ -12,32 +12,49 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Properties;
 
 public class Main {
-    private final String APP_ID = "c977b768";
-    private final String APP_KEY = "e568d76b73e0f891716a76f6ff0dea56";
+    private String appId;
+    private String appKey;
 
     private int totalPages = 1;
 
     private Map<Character, Integer> flightsByPier;
 
-    private Map<Character, SortedMap<String, Integer>> flightsByAirlineByPier;
+    private Map<Character, Map<String, Integer>> flightsByAirlineByPier;
 
     public Main() {
+        this.loadProperties();
         this.flightsByPier = new HashMap<>();
         this.flightsByAirlineByPier = new HashMap<>();
+    }
+
+    private void loadProperties() {
+        Properties properties = new Properties();
+        try {
+            InputStream input = new FileInputStream("config/config.properties");
+            properties.load(input);
+            this.appId = properties.getProperty("appId");
+            this.appKey = properties.getProperty("appKey");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void process() {
         try {
             int currentPage = 0;
             JSONArray flights = new JSONArray();
-            while (currentPage < 20) {
+            while (currentPage < 5) {
                 HttpResponse response = this.getResponse(currentPage);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     flights.addAll(this.getFlights(response));
@@ -59,7 +76,7 @@ public class Main {
 
     private HttpResponse getResponse(int pageNumber) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/flights?app_id=" + APP_ID + "&app_key=" + APP_KEY + "&page=" + pageNumber);
+        HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/flights?app_id=" + appId + "&app_key=" + appKey + "&page=" + pageNumber);
         request.addHeader("ResourceVersion", "v3");
         return httpClient.execute(request);
     }
@@ -115,8 +132,8 @@ public class Main {
             this.flightsByPier.putIfAbsent(pier, 0);
             this.flightsByPier.put(pier, this.flightsByPier.get(pier) + 1);
 
-            this.flightsByAirlineByPier.putIfAbsent(pier, new TreeMap<>());
-            SortedMap<String, Integer> map = this.flightsByAirlineByPier.get(pier);
+            this.flightsByAirlineByPier.putIfAbsent(pier, new HashMap<>());
+            Map<String, Integer> map = this.flightsByAirlineByPier.get(pier);
             map.putIfAbsent(airline, 0);
             map.put(airline, map.get(airline) + 1);
         }
