@@ -13,7 +13,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -43,8 +42,6 @@ public class Analyzer {
             properties.load(input);
             this.appId = properties.getProperty("appId");
             this.appKey = properties.getProperty("appKey");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,7 +51,7 @@ public class Analyzer {
         try {
             int currentPage = 0;
             JSONArray flights = new JSONArray();
-            while (currentPage < 5) {
+            while (currentPage < this.totalPages) {
                 HttpResponse response = this.getResponse(currentPage);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     flights.addAll(this.getFlights(response));
