@@ -15,9 +15,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class Analyzer {
     private String appId;
@@ -29,10 +27,13 @@ public class Analyzer {
 
     private Map<Character, Map<String, Integer>> flightsByAirlineByPier;
 
+    private SortedMap<String, Integer> flightsByDestination;
+
     public Analyzer() {
         this.loadProperties();
         this.flightsByPier = new HashMap<>();
         this.flightsByAirlineByPier = new HashMap<>();
+        this.flightsByDestination = new TreeMap<>();
     }
 
     private void loadProperties() {
@@ -64,6 +65,7 @@ public class Analyzer {
             }
             this.printFlights(flights);
             this.printFlightsByPier();
+            this.printFlightsByDestination();
             System.out.println();
             this.printFlightsByAirlineByPier();
         } catch (IOException | ParseException e) {
@@ -76,6 +78,19 @@ public class Analyzer {
         HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/flights?app_id=" + appId + "&app_key=" + appKey + "&page=" + pageNumber);
         request.addHeader("ResourceVersion", "v3");
         return httpClient.execute(request);
+    }
+
+    private JSONObject getDestinationResponse(String airportCode) throws IOException, ParseException {
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/destinations/" + airportCode + "?app_id=" + appId + "&app_key=" + appKey);
+        request.addHeader("ResourceVersion", "v1");
+        HttpResponse httpResponse = httpClient.execute(request);
+
+        String responseBody = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
+
+        return jsonObject;
     }
 
     private JSONArray getFlights(HttpResponse httpResponse) throws IOException, ParseException {
@@ -113,17 +128,19 @@ public class Analyzer {
             String scheduleTime = flight.get("scheduleTime").toString();
             String airline = airlineObject.toString();
 
+            boolean isDeparture = flightDirection.equals("D");
+
             JSONObject route = (JSONObject) flight.get("route");
             JSONArray destinations = (JSONArray) route.get("destinations");
 
-            System.out.println(flightName);
-            String flightDirectionString = flightDirection.equals("d") ? "Departure:" : "Arrival:";
-            System.out.print(flightDirectionString + " " + scheduleDate + " ");
-            System.out.println(scheduleTime);
+//            System.out.println(flightName);
+            String flightDirectionString = isDeparture ? "Departure:" : "Arrival:";
+//            System.out.print(flightDirectionString + " " + scheduleDate + " ");
+//            System.out.println(scheduleTime);
 
-            System.out.println(gate);
-            System.out.println(destinations);
-            System.out.println();
+//            System.out.println(gate);
+//            System.out.println(destinations);
+//            System.out.println();
 
             char pier = gate.charAt(0);
             this.flightsByPier.putIfAbsent(pier, 0);
@@ -133,6 +150,17 @@ public class Analyzer {
             Map<String, Integer> map = this.flightsByAirlineByPier.get(pier);
             map.putIfAbsent(airline, 0);
             map.put(airline, map.get(airline) + 1);
+
+            if (isDeparture) {
+                try {
+                    JSONObject jsonObject = this.getDestinationResponse(destinations.get(destinations.size() - 1).toString());
+                    String destination = jsonObject.get("country") + ", " + jsonObject.get("city");
+                    this.flightsByDestination.putIfAbsent(destination, 0);
+                    this.flightsByDestination.put(destination, this.flightsByDestination.get(destination) + 1);
+                } catch (IOException | ParseException e) {
+                    System.out.println("ERROR! " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -145,6 +173,41 @@ public class Analyzer {
     private void printFlightsByAirlineByPier() {
         for (Map.Entry entry : this.flightsByAirlineByPier.entrySet()) {
             System.out.println(entry.getKey() + " pier: " + entry.getValue() + " flights");
+        }
+    }
+
+    private void printFlightsByDestination() {
+        SortedMap<String, Integer> sortedMap = this.sortMapByValue(this.flightsByDestination);
+        for (Map.Entry entry : sortedMap.entrySet()) {
+            int value = (int)entry.getValue();
+            if (value < 10) {
+                break;
+            }
+            System.out.println(entry.getKey() + " : " + value + " flights");
+        }
+    }
+
+    private TreeMap<String, Integer> sortMapByValue(SortedMap<String, Integer> map) {
+        Comparator<String> comparator = new ValueComparator(map);
+        TreeMap<String, Integer> result = new TreeMap<>(comparator);
+        result.putAll(map);
+        return result;
+    }
+
+    class ValueComparator implements Comparator<String> {
+        HashMap<String, Integer> map = new HashMap<>();
+
+        public ValueComparator(SortedMap<String, Integer> map) {
+            this.map.putAll(map);
+        }
+
+        @Override
+        public int compare(String s1, String s2) {
+            if (map.get(s1) >= map.get(s2)) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
 }
