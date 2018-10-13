@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url:  jdbc:mysql://localhost/schiphol
+    url:  jdbc:mysql://localhost/schiphol?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: schiphol
     password: schiphol
     driver-class-name: com.mysql.jdbc.Driver
