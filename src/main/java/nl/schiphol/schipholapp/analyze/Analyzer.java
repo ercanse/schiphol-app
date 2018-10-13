@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Analyzer {
+    private Client client;
+
     private Map<Character, Integer> flightsByPier;
 
     private Map<Character, Map<String, Integer>> flightsByAirlineByPier;
@@ -15,7 +17,7 @@ public class Analyzer {
         this.flightsByPier = new HashMap<>();
         this.flightsByAirlineByPier = new HashMap<>();
 
-        JSONArray flights = new Client().process("flights");
+        JSONArray flights = this.client.process("flights", "v3");
         this.printFlights(flights);
     }
 

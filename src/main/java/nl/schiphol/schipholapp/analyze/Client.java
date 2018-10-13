@@ -13,12 +13,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+@Component
 public class Client {
     private final Logger log = LoggerFactory.getLogger(Client.class);
     private final String configFile = "config/config.properties";
@@ -44,12 +46,12 @@ public class Client {
         }
     }
 
-    public JSONArray process(String resource) {
+    public JSONArray process(String resource, String apiVersion) {
         int currentPage = 0;
         JSONArray flights = new JSONArray();
         try {
             while (currentPage < 5) {
-                HttpResponse response = this.getResponse(resource, currentPage);
+                HttpResponse response = this.getResponse(resource, apiVersion, currentPage);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     flights.addAll(this.getData(resource, response));
                 } else {
@@ -65,10 +67,10 @@ public class Client {
         return flights;
     }
 
-    private HttpResponse getResponse(String resource, int pageNumber) throws IOException {
+    private HttpResponse getResponse(String resource, String apiVersion, int pageNumber) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
         HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/" + resource + "?app_id=" + appId + "&app_key=" + appKey + "&page=" + pageNumber);
-        request.addHeader("ResourceVersion", "v3");
+        request.addHeader("ResourceVersion", apiVersion);
         return httpClient.execute(request);
     }
 
