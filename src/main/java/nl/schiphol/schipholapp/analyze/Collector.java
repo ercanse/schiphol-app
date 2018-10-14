@@ -1,6 +1,8 @@
 package nl.schiphol.schipholapp.analyze;
 
 import nl.schiphol.schipholapp.Application;
+import nl.schiphol.schipholapp.entity.Destination;
+import nl.schiphol.schipholapp.service.DestinationService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ public class Collector implements ApplicationListener<ApplicationReadyEvent> {
 
     private Client client;
 
+    private DestinationService destinationService;
+
     private String mode;
     private String apiVersion;
 
@@ -37,17 +41,34 @@ public class Collector implements ApplicationListener<ApplicationReadyEvent> {
 
     public void collect(String resource, String apiVersion) {
         JSONArray data = this.client.process(resource, apiVersion);
-        this.printData(data);
+        this.processData(data);
     }
 
-    private void printData(JSONArray data) {
+    private void processData(JSONArray data) {
         System.out.println("Found " + data.size() + " results.");
         for (Object flightObject : data) {
             JSONObject flight = (JSONObject) flightObject;
+
+            Object country = flight.get("country");
+            Object city = flight.get("city");
             Object iata = flight.get("iata");
-            if (iata != null) {
-                log.info(iata.toString());
+            JSONObject publicName = (JSONObject) flight.get("publicName");
+            Object englishName = publicName.get("english");
+            Object dutchName = publicName.get("dutch");
+
+            if (country == null || city == null || iata == null || englishName == null || dutchName == null) {
+                continue;
             }
+
+            Destination destination = new Destination();
+            destination.setCountry(country.toString());
+            destination.setCity(city.toString());
+            destination.setIata(iata.toString());
+            destination.setEnglishName(englishName.toString());
+            destination.setDutchName(dutchName.toString());
+
+            log.info("Inserting destination");
+            this.destinationService.save(destination);
         }
     }
 
@@ -59,5 +80,10 @@ public class Collector implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    @Autowired
+    public void setDestinationService(DestinationService destinationService) {
+        this.destinationService = destinationService;
     }
 }

@@ -24,6 +24,8 @@ import java.util.Properties;
 public class Client {
     private final Logger log = LoggerFactory.getLogger(Client.class);
     private final String configFile = "config/config.properties";
+    private final int maxRequestsPerMinute = 200;
+    private final int waitPeriod = 60000;
 
     private String appId;
     private String appKey;
@@ -50,7 +52,11 @@ public class Client {
         int currentPage = 0;
         JSONArray flights = new JSONArray();
         try {
-            while (currentPage < 5) {
+            while (currentPage < this.totalPages) {
+                if (currentPage != 0 && (currentPage % this.maxRequestsPerMinute == 0)) {
+                    Thread.sleep(this.waitPeriod);
+                }
+
                 HttpResponse response = this.getResponse(resource, apiVersion, currentPage);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     flights.addAll(this.getData(resource, response));
@@ -61,7 +67,7 @@ public class Client {
                 }
                 currentPage++;
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException | ParseException | InterruptedException e) {
             log.error(e.getMessage());
         }
         return flights;

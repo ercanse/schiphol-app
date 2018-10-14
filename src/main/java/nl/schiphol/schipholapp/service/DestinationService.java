@@ -26,6 +26,10 @@ public class DestinationService {
         return assetFlowStatus.orElse(null);
     }
 
+    public void save(Destination destination) {
+        this.destinationRepository.save(destination);
+    }
+
     @Autowired
     public void setDestinationRepository(DestinationRepository assetFlowStatusRepository) {
         this.destinationRepository = assetFlowStatusRepository;
