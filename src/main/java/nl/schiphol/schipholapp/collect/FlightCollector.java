@@ -36,15 +36,31 @@ public class FlightCollector extends Collector {
     void processData(JSONArray data) {
         System.out.println("Found " + data.size() + " results.");
         for (Object destinationObject : data) {
-            Flight flight = this.createDestinationObject((JSONObject) destinationObject);
+            Flight flight = this.createFlightObject((JSONObject) destinationObject);
             if (flight != null) {
-                this.saveDestination(flight);
+                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
+//                this.saveDestination(flight);
             }
         }
     }
 
-    private Flight createDestinationObject(JSONObject destinationObject) {
-        return null;
+    private Flight createFlightObject(JSONObject flightObject) {
+        Object gateObject = flightObject.get("gate");
+        Object airlineObject = flightObject.get("prefixICAO");
+        if (gateObject == null || airlineObject == null) {
+            return null;
+        }
+
+        String gate = gateObject.toString();
+        String flightName = flightObject.get("flightName").toString();
+        JSONObject route = (JSONObject) flightObject.get("route");
+        JSONArray destinations = (JSONArray) route.get("destinations");
+
+        Flight flight = new Flight();
+        flight.setFlightName(flightName);
+        flight.setDestination(destinations.get(destinations.size() - 1).toString());
+        flight.setGate(gate);
+        return flight;
     }
 
     private void saveDestination(Flight flight) {

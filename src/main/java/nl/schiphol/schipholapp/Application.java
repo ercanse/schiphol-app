@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"nl.schiphol.schipholapp.analyze", "nl.schiphol.schipholapp.service"})
+@ComponentScan(basePackages = {"nl.schiphol.schipholapp.analyze", "nl.schiphol.schipholapp.collect",
+        "nl.schiphol.schipholapp.service"})
 @EntityScan("nl.schiphol.schipholapp.entity")
 @EnableJpaRepositories("nl.schiphol.schipholapp.repository")
 public class Application {
@@ -23,6 +24,10 @@ public class Application {
                 case "destinations":
                     Application.setResource("destinations");
                     Application.setApiVersion("v1");
+                    break;
+                case "flights":
+                    Application.setResource("flights");
+                    Application.setApiVersion("v3");
                     break;
                 default:
                     break;
