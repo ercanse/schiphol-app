@@ -1,4 +1,4 @@
-package nl.schiphol.schipholapp.analyze;
+package nl.schiphol.schipholapp.collect;
 
 import nl.schiphol.schipholapp.Application;
 import nl.schiphol.schipholapp.entity.Destination;
@@ -8,44 +8,32 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Collector implements ApplicationListener<ApplicationReadyEvent> {
-    private final Logger log = LoggerFactory.getLogger(Collector.class);
+public class DestinationCollector extends Collector {
+    private final Logger log = LoggerFactory.getLogger(DestinationCollector.class);
 
-    private ApplicationContext appContext;
-
-    private Client client;
+    private final String collectorMode = "destination";
 
     private DestinationService destinationService;
 
     private String mode;
     private String apiVersion;
 
-    public void initiateShutdown(int returnCode) {
-        SpringApplication.exit(appContext, () -> returnCode);
-    }
-
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         this.mode = Application.getResource();
         this.apiVersion = Application.getApiVersion();
-        this.collect(this.mode, this.apiVersion);
-        this.initiateShutdown(0);
+        if (this.collectorMode.equals(this.mode)) {
+            this.collect(this.mode, this.apiVersion);
+            this.initiateShutdown(0);
+        }
     }
 
-    public void collect(String resource, String apiVersion) {
-        JSONArray data = this.client.process(resource, apiVersion);
-        this.processData(data);
-    }
-
-    private void processData(JSONArray data) {
+    void processData(JSONArray data) {
         System.out.println("Found " + data.size() + " results.");
         for (Object destinationObject : data) {
             Destination destination = this.createDestinationObject((JSONObject) destinationObject);
@@ -84,16 +72,6 @@ public class Collector implements ApplicationListener<ApplicationReadyEvent> {
         } catch (DataIntegrityViolationException e) {
             log.error("Skipping already existing tweet.");
         }
-    }
-
-    @Autowired
-    public void setAppContext(ApplicationContext appContext) {
-        this.appContext = appContext;
-    }
-
-    @Autowired
-    public void setClient(Client client) {
-        this.client = client;
     }
 
     @Autowired
