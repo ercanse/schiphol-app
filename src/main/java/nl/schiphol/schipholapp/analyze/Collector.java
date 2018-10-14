@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,29 +47,42 @@ public class Collector implements ApplicationListener<ApplicationReadyEvent> {
 
     private void processData(JSONArray data) {
         System.out.println("Found " + data.size() + " results.");
-        for (Object flightObject : data) {
-            JSONObject flight = (JSONObject) flightObject;
-
-            Object country = flight.get("country");
-            Object city = flight.get("city");
-            Object iata = flight.get("iata");
-            JSONObject publicName = (JSONObject) flight.get("publicName");
-            Object englishName = publicName.get("english");
-            Object dutchName = publicName.get("dutch");
-
-            if (country == null || city == null || iata == null || englishName == null || dutchName == null) {
-                continue;
+        for (Object destinationObject : data) {
+            Destination destination = this.createDestinationObject((JSONObject) destinationObject);
+            if (destination != null) {
+                this.saveDestination(destination);
             }
+        }
+    }
 
-            Destination destination = new Destination();
-            destination.setCountry(country.toString());
-            destination.setCity(city.toString());
-            destination.setIata(iata.toString());
-            destination.setEnglishName(englishName.toString());
-            destination.setDutchName(dutchName.toString());
+    private Destination createDestinationObject(JSONObject destinationObject) {
+        Object country = destinationObject.get("country");
+        Object city = destinationObject.get("city");
+        Object iata = destinationObject.get("iata");
+        JSONObject publicName = (JSONObject) destinationObject.get("publicName");
+        Object englishName = publicName.get("english");
+        Object dutchName = publicName.get("dutch");
 
-            log.info("Inserting destination");
+        if (country == null || city == null || iata == null || englishName == null || dutchName == null) {
+            log.warn("Missing required field(s) - skipping destination");
+            return null;
+        }
+
+        Destination destination = new Destination();
+        destination.setCountry(country.toString());
+        destination.setCity(city.toString());
+        destination.setIata(iata.toString());
+        destination.setEnglishName(englishName.toString());
+        destination.setDutchName(dutchName.toString());
+        return destination;
+    }
+
+    private void saveDestination(Destination destination) {
+        log.info("Inserting destination with IATA code {}", destination.getIata());
+        try {
             this.destinationService.save(destination);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Skipping already existing tweet.");
         }
     }
 
