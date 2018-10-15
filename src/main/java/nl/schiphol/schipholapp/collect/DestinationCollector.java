@@ -65,13 +65,16 @@ public class DestinationCollector extends Collector {
         return destination;
     }
 
-    public void saveDestination(Destination destination) {
+    public boolean saveDestination(Destination destination) {
+        boolean saved = false;
         log.info("Inserting destination with IATA code {}", destination.getIata());
         try {
             this.destinationService.save(destination);
+            saved = true;
         } catch (DataIntegrityViolationException e) {
-            log.error("Skipping already existing tweet.");
+            log.error("Skipping already existing destination.");
         }
+        return saved;
     }
 
     @Autowired

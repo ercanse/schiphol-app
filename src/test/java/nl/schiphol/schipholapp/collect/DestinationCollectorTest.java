@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,7 +63,12 @@ public class DestinationCollectorTest {
 
     @Test
     public void testSaveDestination() {
+        assertTrue(this.destinationCollector.saveDestination(this.destination));
+    }
+
+    @Test
+    public void testSaveDuplicateDestination() {
         doThrow(new DataIntegrityViolationException("")).when(this.destinationService).save(destination);
-        this.destinationCollector.saveDestination(this.destination);
+        assertFalse(this.destinationCollector.saveDestination(this.destination));
     }
 }
