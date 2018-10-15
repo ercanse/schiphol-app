@@ -43,7 +43,7 @@ public class DestinationCollector extends Collector {
         }
     }
 
-    private Destination createDestinationObject(JSONObject destinationObject) {
+    public Destination createDestinationObject(JSONObject destinationObject) {
         Object country = destinationObject.get("country");
         Object city = destinationObject.get("city");
         Object iata = destinationObject.get("iata");
@@ -65,7 +65,7 @@ public class DestinationCollector extends Collector {
         return destination;
     }
 
-    private void saveDestination(Destination destination) {
+    public void saveDestination(Destination destination) {
         log.info("Inserting destination with IATA code {}", destination.getIata());
         try {
             this.destinationService.save(destination);
