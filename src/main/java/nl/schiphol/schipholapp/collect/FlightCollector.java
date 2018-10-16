@@ -12,6 +12,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Component
 public class FlightCollector extends Collector {
     private final Logger log = LoggerFactory.getLogger(FlightCollector.class);
@@ -38,17 +42,26 @@ public class FlightCollector extends Collector {
         for (Object destinationObject : data) {
             Flight flight = this.createFlightObject((JSONObject) destinationObject);
             if (flight != null) {
-//                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
-//                this.saveDestination(flight);
+                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
+                this.saveFlight(flight);
             }
         }
     }
 
-    private Flight createFlightObject(JSONObject flightObject) {
+    public Flight createFlightObject(JSONObject flightObject) {
         Object gateObject = flightObject.get("gate");
         Object airlineObject = flightObject.get("prefixICAO");
         if (gateObject == null || airlineObject == null) {
             return null;
+        }
+
+        String scheduleDateString = flightObject.get("scheduleDate").toString();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Date scheduleDate = null;
+        try {
+            scheduleDate = dateFormat.parse(scheduleDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         String gate = gateObject.toString();
@@ -64,15 +77,19 @@ public class FlightCollector extends Collector {
         }
         flight.setDestination(destination);
         flight.setGate(gate);
+        flight.setDate(scheduleDate);
         return flight;
     }
 
-    private void saveDestination(Flight flight) {
+    public boolean saveFlight(Flight flight) {
+        boolean saved = false;
         try {
             this.flightService.save(flight);
+            saved = true;
         } catch (DataIntegrityViolationException e) {
             log.error("Skipping already existing tweet.");
         }
+        return saved;
     }
 
     @Autowired
