@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class DestinationCollector extends Collector {
     private final Logger log = LoggerFactory.getLogger(DestinationCollector.class);
 
-    private final String collectorMode = "destination";
+    private final String collectorMode = "destinations";
 
     private DestinationService destinationService;
 

@@ -38,7 +38,7 @@ public class FlightCollector extends Collector {
         for (Object destinationObject : data) {
             Flight flight = this.createFlightObject((JSONObject) destinationObject);
             if (flight != null) {
-                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
+//                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
 //                this.saveDestination(flight);
             }
         }
@@ -58,7 +58,11 @@ public class FlightCollector extends Collector {
 
         Flight flight = new Flight();
         flight.setFlightName(flightName);
-        flight.setDestination(destinations.get(destinations.size() - 1).toString());
+        String destination = destinations.get(destinations.size() - 1).toString();
+        if (destinations.size() > 1 && "d".equals(flightObject.get("flightDirection").toString())) {
+            log.info(flightObject.get("scheduleTime").toString());
+        }
+        flight.setDestination(destination);
         flight.setGate(gate);
         return flight;
     }
