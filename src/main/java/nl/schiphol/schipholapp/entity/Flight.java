@@ -2,6 +2,7 @@ package nl.schiphol.schipholapp.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class Flight {
@@ -13,6 +14,8 @@ public class Flight {
     private String flightName;
 
     private String destination;
+
+    private Date date;
 
     public int getId() {
         return id;
@@ -44,5 +47,13 @@ public class Flight {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
