@@ -2,12 +2,15 @@ package nl.schiphol.schipholapp.collect;
 
 import nl.schiphol.schipholapp.entity.Flight;
 import nl.schiphol.schipholapp.service.FlightService;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static junit.framework.TestCase.assertTrue;
@@ -40,31 +43,39 @@ public class FlightCollectorTest {
     }
 
     @Test
-    public void testCreateDestinationObject() {
+    public void testCreateFlightObject() throws ParseException {
         String flightName = "The Netherlands";
-        String destination = "Amsterdam";
-        String gate = "AMS";
-        Date scheduleDate = new Date();
+        String destination = "SAW";
+        String gate = "D44";
+        String prefixICAO = "KLM";
+        String scheduleDate = "2018-01-01";
+
+        JSONArray destinations = new JSONArray();
+        destinations.add("SAW");
+        JSONObject route = new JSONObject();
+        route.put("destinations", destinations);
 
         when(this.jsonObject.get("flightName")).thenReturn(flightName);
         when(this.jsonObject.get("destination")).thenReturn(destination);
         when(this.jsonObject.get("gate")).thenReturn(gate);
+        when(this.jsonObject.get("prefixICAO")).thenReturn(prefixICAO);
         when(this.jsonObject.get("scheduleDate")).thenReturn(scheduleDate);
+        when(this.jsonObject.get("route")).thenReturn(route);
 
         Flight flight = this.flightCollector.createFlightObject(this.jsonObject);
         assertEquals(flightName, flight.getFlightName());
         assertEquals(destination, flight.getDestination());
         assertEquals(gate, flight.getGate());
-        assertEquals(scheduleDate, flight.getDate());
+        assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(scheduleDate), flight.getDate());
     }
 
     @Test
-    public void testSaveDestination() {
+    public void testSaveFlight() {
         assertTrue(this.flightCollector.saveFlight(this.flight));
     }
 
     @Test
-    public void testSaveDuplicateDestination() {
+    public void testSaveDuplicateFlight() {
         doThrow(new DataIntegrityViolationException("")).when(this.flightService).save(flight);
         assertFalse(this.flightCollector.saveFlight(this.flight));
     }

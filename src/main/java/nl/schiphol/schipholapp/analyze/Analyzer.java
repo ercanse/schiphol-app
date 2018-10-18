@@ -2,11 +2,16 @@ package nl.schiphol.schipholapp.analyze;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Analyzer {
+@Component
+public class Analyzer implements ApplicationListener<ApplicationReadyEvent> {
     private Client client;
 
     private Map<Character, Integer> flightsByPier;
@@ -16,9 +21,19 @@ public class Analyzer {
     public Analyzer() {
         this.flightsByPier = new HashMap<>();
         this.flightsByAirlineByPier = new HashMap<>();
+    }
 
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         JSONArray flights = this.client.process("flights", "v3");
         this.printFlights(flights);
+        this.printFlightsByPier();
+        this.printFlightsByAirlineByPier();
+    }
+
+    @Autowired
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     private void printFlights(JSONArray flights) {

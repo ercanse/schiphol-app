@@ -56,7 +56,7 @@ public class FlightCollector extends Collector {
         }
 
         String scheduleDateString = flightObject.get("scheduleDate").toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date scheduleDate = null;
         try {
             scheduleDate = dateFormat.parse(scheduleDateString);
