@@ -15,7 +15,19 @@ public class Flight {
 
     private String destination;
 
-    private Date date;
+    private Date scheduleDate;
+
+    private boolean isDeparture;
+
+    private String iata;
+
+    private String icao;
+
+    private int terminal;
+
+    private String iataMain;
+
+    private String iataSub;
 
     public int getId() {
         return id;
@@ -49,11 +61,59 @@ public class Flight {
         this.destination = destination;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getScheduleDate() {
+        return scheduleDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setScheduleDate(Date scheduleDate) {
+        this.scheduleDate = scheduleDate;
+    }
+
+    public boolean isDeparture() {
+        return isDeparture;
+    }
+
+    public void setDeparture(boolean departure) {
+        isDeparture = departure;
+    }
+
+    public String getIata() {
+        return iata;
+    }
+
+    public void setIata(String iata) {
+        this.iata = iata;
+    }
+
+    public String getIcao() {
+        return icao;
+    }
+
+    public void setIcao(String icao) {
+        this.icao = icao;
+    }
+
+    public int getTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(int terminal) {
+        this.terminal = terminal;
+    }
+
+    public String getIataMain() {
+        return iataMain;
+    }
+
+    public void setIataMain(String iataMain) {
+        this.iataMain = iataMain;
+    }
+
+    public String getIataSub() {
+        return iataSub;
+    }
+
+    public void setIataSub(String iataSub) {
+        this.iataSub = iataSub;
     }
 }

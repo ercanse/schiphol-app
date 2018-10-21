@@ -11,7 +11,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -66,7 +65,7 @@ public class FlightCollectorTest {
         assertEquals(flightName, flight.getFlightName());
         assertEquals(destination, flight.getDestination());
         assertEquals(gate, flight.getGate());
-        assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(scheduleDate), flight.getDate());
+        assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(scheduleDate), flight.getScheduleDate());
     }
 
     @Test

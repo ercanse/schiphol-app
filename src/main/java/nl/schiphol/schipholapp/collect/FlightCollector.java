@@ -77,7 +77,7 @@ public class FlightCollector extends Collector {
         }
         flight.setDestination(destination);
         flight.setGate(gate);
-        flight.setDate(scheduleDate);
+        flight.setScheduleDate(scheduleDate);
         return flight;
     }
 
