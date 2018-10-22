@@ -25,10 +25,10 @@ public class Analyzer implements ApplicationListener<ApplicationReadyEvent> {
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        JSONArray flights = this.client.process("flights", "v3");
-        this.printFlights(flights);
-        this.printFlightsByPier();
-        this.printFlightsByAirlineByPier();
+//        JSONArray flights = this.client.process("flights", "v3");
+//        this.printFlights(flights);
+//        this.printFlightsByPier();
+//        this.printFlightsByAirlineByPier();
     }
 
     @Autowired
