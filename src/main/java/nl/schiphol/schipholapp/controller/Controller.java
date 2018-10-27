@@ -19,17 +19,26 @@ public class Controller {
 
     @RequestMapping("/test")
     @CrossOrigin("*")
-    public ResponseEntity<List<Map<String, Integer>>> test() {
-        // todo: each pier as separate map
-        Map<String, Integer> map = new HashMap<>();
-        map.put("A", 10);
-        map.put("B", 30);
-        map.put("C", 30);
-        map.put("D", 50);
+    public ResponseEntity<List<Map>> test() {
+        Map<String, Object> pierAMap = new HashMap<>();
+        pierAMap.put("pier", "A");
+        pierAMap.put("flights", 10);
+        Map<String, Object> pierBMap = new HashMap<>();
+        pierBMap.put("pier", "B");
+        pierBMap.put("flights", 30);
+        Map<String, Object> pierCMap = new HashMap<>();
+        pierCMap.put("pier", "C");
+        pierCMap.put("flights", 30);
+        Map<String, Object> pierDMap = new HashMap<>();
+        pierDMap.put("pier", "D");
+        pierDMap.put("flights", 50);
 
-        List<Map<String, Integer>> list = new ArrayList<>();
-        list.add(map);
+        List<Map> results = new ArrayList<>();
+        results.add(pierAMap);
+        results.add(pierBMap);
+        results.add(pierCMap);
+        results.add(pierDMap);
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 }
