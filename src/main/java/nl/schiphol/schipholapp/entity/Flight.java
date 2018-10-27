@@ -1,13 +1,18 @@
 package nl.schiphol.schipholapp.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
 public class Flight {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private long apiId;
 
     private String gate;
 
@@ -19,15 +24,15 @@ public class Flight {
 
     private boolean isDeparture;
 
-    private String iata;
+    private String airlineIata;
 
-    private String icao;
+    private String airlineIcao;
 
-    private int terminal;
+    private long terminal;
 
-    private String iataMain;
+    private String aircraftMainType;
 
-    private String iataSub;
+    private String aircraftSubType;
 
     public int getId() {
         return id;
@@ -35,6 +40,14 @@ public class Flight {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public long getApiId() {
+        return apiId;
+    }
+
+    public void setApiId(long apiId) {
+        this.apiId = apiId;
     }
 
     public String getGate() {
@@ -77,43 +90,59 @@ public class Flight {
         isDeparture = departure;
     }
 
-    public String getIata() {
-        return iata;
+    public String getAirlineIata() {
+        return airlineIata;
     }
 
-    public void setIata(String iata) {
-        this.iata = iata;
+    public void setAirlineIata(String airlineIata) {
+        this.airlineIata = airlineIata;
     }
 
-    public String getIcao() {
-        return icao;
+    public String getAirlineIcao() {
+        return airlineIcao;
     }
 
-    public void setIcao(String icao) {
-        this.icao = icao;
+    public void setAirlineIcao(String airlineIcao) {
+        this.airlineIcao = airlineIcao;
     }
 
-    public int getTerminal() {
+    public long getTerminal() {
         return terminal;
     }
 
-    public void setTerminal(int terminal) {
+    public void setTerminal(long terminal) {
         this.terminal = terminal;
     }
 
-    public String getIataMain() {
-        return iataMain;
+    public String getAircraftMainType() {
+        return aircraftMainType;
     }
 
-    public void setIataMain(String iataMain) {
-        this.iataMain = iataMain;
+    public void setAircraftMainType(String aircraftMainType) {
+        this.aircraftMainType = aircraftMainType;
     }
 
-    public String getIataSub() {
-        return iataSub;
+    public String getAircraftSubType() {
+        return aircraftSubType;
     }
 
-    public void setIataSub(String iataSub) {
-        this.iataSub = iataSub;
+    public void setAircraftSubType(String aircraftSubType) {
+        this.aircraftSubType = aircraftSubType;
+    }
+
+    @Override
+    public String toString() {
+        return "Flight{" +
+                "gate='" + gate + '\'' +
+                ", flightName='" + flightName + '\'' +
+                ", destination='" + destination + '\'' +
+                ", scheduleDate=" + scheduleDate +
+                ", isDeparture=" + isDeparture +
+                ", airlineIata='" + airlineIata + '\'' +
+                ", airlineIcao='" + airlineIcao + '\'' +
+                ", terminal=" + terminal +
+                ", aircraftMainType='" + aircraftMainType + '\'' +
+                ", aircraftSubType='" + aircraftSubType + '\'' +
+                '}';
     }
 }

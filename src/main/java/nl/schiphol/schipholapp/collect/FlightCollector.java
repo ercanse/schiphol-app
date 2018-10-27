@@ -42,7 +42,7 @@ public class FlightCollector extends Collector {
         for (Object destinationObject : data) {
             Flight flight = this.createFlightObject((JSONObject) destinationObject);
             if (flight != null) {
-                log.info("{}, {}, {}", flight.getFlightName(), flight.getGate(), flight.getDestination());
+                log.info(flight.toString());
                 this.saveFlight(flight);
             }
         }
@@ -50,8 +50,7 @@ public class FlightCollector extends Collector {
 
     public Flight createFlightObject(JSONObject flightObject) {
         Object gateObject = flightObject.get("gate");
-        Object airlineObject = flightObject.get("prefixICAO");
-        if (gateObject == null || airlineObject == null) {
+        if (gateObject == null) {
             return null;
         }
 
@@ -61,23 +60,50 @@ public class FlightCollector extends Collector {
         try {
             scheduleDate = dateFormat.parse(scheduleDateString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.info("Could not parse date {}.", scheduleDateString);
         }
-
-        String gate = gateObject.toString();
-        String flightName = flightObject.get("flightName").toString();
-        JSONObject route = (JSONObject) flightObject.get("route");
-        JSONArray destinations = (JSONArray) route.get("destinations");
 
         Flight flight = new Flight();
-        flight.setFlightName(flightName);
-        String destination = destinations.get(destinations.size() - 1).toString();
-        if (destinations.size() > 1 && "d".equals(flightObject.get("flightDirection").toString())) {
-            log.info(flightObject.get("scheduleTime").toString());
+        flight.setApiId((long) flightObject.get("id"));
+        flight.setGate(gateObject.toString());
+        flight.setFlightName(flightObject.get("flightName").toString());
+
+        JSONObject route = (JSONObject) flightObject.get("route");
+        if (route != null) {
+            JSONArray destinations = (JSONArray) route.get("destinations");
+            if (!destinations.isEmpty()) {
+                String destination = destinations.get(destinations.size() - 1).toString();
+                flight.setDestination(destination);
+            }
         }
-        flight.setDestination(destination);
-        flight.setGate(gate);
+
         flight.setScheduleDate(scheduleDate);
+        Object terminalObject = flightObject.get("terminal");
+        if (terminalObject != null) {
+            flight.setTerminal(Long.parseLong(terminalObject.toString()));
+        }
+        flight.setDeparture("D".equals(flightObject.get("flightDirection")));
+
+        JSONObject aircraftType = (JSONObject) flightObject.get("aircraftType");
+        if (aircraftType != null) {
+            Object iataMain = aircraftType.get("iatamain");
+            if (iataMain != null) {
+                flight.setAircraftMainType(iataMain.toString());
+            }
+            Object iataSub = aircraftType.get("iatasub");
+            if (iataSub != null) {
+                flight.setAircraftSubType(iataSub.toString());
+            }
+        }
+
+        Object prefixIataObject = flightObject.get("prefixIATA");
+        if (prefixIataObject != null) {
+            flight.setAirlineIata(prefixIataObject.toString());
+        }
+        Object prefixIcaoObject = flightObject.get("prefixICAO");
+        if (prefixIcaoObject != null) {
+            flight.setAirlineIcao(prefixIcaoObject.toString());
+        }
         return flight;
     }
 
@@ -87,7 +113,7 @@ public class FlightCollector extends Collector {
             this.flightService.save(flight);
             saved = true;
         } catch (DataIntegrityViolationException e) {
-            log.error("Skipping already existing tweet.");
+            log.error("Skipping already existing flight.");
         }
         return saved;
     }
