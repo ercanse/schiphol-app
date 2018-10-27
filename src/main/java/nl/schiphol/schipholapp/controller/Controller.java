@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class Controller {
 
     @RequestMapping("/test")
     @CrossOrigin("*")
-    public ResponseEntity<List<Map>> test() {
-        List<Map> results = this.analyzer.getFlightsByPier();
+    public ResponseEntity<List<Map>> test(@RequestParam("date") String date) {
+        List<Map> results = this.analyzer.getFlightsByPierOnDate(date);
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 

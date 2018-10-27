@@ -18,10 +18,10 @@ public class Analyzer {
 
     private FlightService flightService;
 
-    public List<Map> getFlightsByPier() {
+    public List<Map> getFlightsByPierOnDate(String date) {
         List<Map> results = new ArrayList<>();
 
-        Map<Character, Integer> flightsByPier = this.calculateFlightsByPier();
+        Map<Character, Integer> flightsByPier = this.calculateFlightsByPierOnDate(date);
         for (Map.Entry entry : flightsByPier.entrySet()) {
             Map<String, Object> pierMap = new HashMap<>();
             pierMap.put("pier", entry.getKey());
@@ -32,10 +32,10 @@ public class Analyzer {
         return results;
     }
 
-    public Map<Character, Integer> calculateFlightsByPier() {
+    public Map<Character, Integer> calculateFlightsByPierOnDate(String date) {
         Map<Character, Integer> flightsByPier = new HashMap<>();
 
-        List<Flight> flights = this.flightService.findAllByDate("2018-10-26");
+        List<Flight> flights = this.flightService.findAllByDate(date);
         log.info("Found {} flights", flights.size());
 
         char pier;
