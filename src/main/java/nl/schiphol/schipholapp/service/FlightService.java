@@ -15,12 +15,16 @@ public class FlightService {
         return this.flightRepository.findAll();
     }
 
+    public List<Flight> findAllByDate(String date) {
+        return flightRepository.findAllByDate(date);
+    }
+
     public void save(Flight Flight) {
         this.flightRepository.save(Flight);
     }
 
     @Autowired
-    public void setFlightRepository(FlightRepository assetFlowStatusRepository) {
-        this.flightRepository = assetFlowStatusRepository;
+    public void setFlightRepository(FlightRepository flightRepository) {
+        this.flightRepository = flightRepository;
     }
 }

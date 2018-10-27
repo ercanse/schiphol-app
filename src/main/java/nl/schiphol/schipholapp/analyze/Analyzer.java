@@ -2,6 +2,8 @@ package nl.schiphol.schipholapp.analyze;
 
 import nl.schiphol.schipholapp.entity.Flight;
 import nl.schiphol.schipholapp.service.FlightService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,8 @@ import java.util.Map;
 
 @Component
 public class Analyzer {
+    private final Logger log = LoggerFactory.getLogger(Analyzer.class);
+
     private FlightService flightService;
 
     public List<Map> getFlightsByPier() {
@@ -31,7 +35,9 @@ public class Analyzer {
     public Map<Character, Integer> calculateFlightsByPier() {
         Map<Character, Integer> flightsByPier = new HashMap<>();
 
-        List<Flight> flights = this.flightService.findAll();
+        List<Flight> flights = this.flightService.findAllByDate("2018-10-26");
+        log.info("Found {} flights", flights.size());
+
         char pier;
         for (Flight flight : flights) {
             pier = flight.getGate().charAt(0);
