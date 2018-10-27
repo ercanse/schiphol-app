@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FlightService {
@@ -14,11 +13,6 @@ public class FlightService {
 
     public List<Flight> findAll() {
         return this.flightRepository.findAll();
-    }
-
-    public Flight findById(int id) {
-        Optional<Flight> assetFlowStatus = this.flightRepository.findById(id);
-        return assetFlowStatus.orElse(null);
     }
 
     public void save(Flight Flight) {
