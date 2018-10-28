@@ -22,7 +22,8 @@ public class Controller {
 
     @RequestMapping("/test")
     @CrossOrigin("*")
-    public ResponseEntity<List<Map>> test(@RequestParam("date") String date) {
+    public ResponseEntity<List<Map>> getFlightsByPierOnDate(@RequestParam("date") String date) {
+        log.info("getFlightsByPierOnDate for date {}", date);
         List<Map> results = this.analyzer.getFlightsByPierOnDate(date);
         return new ResponseEntity<>(results, HttpStatus.OK);
     }

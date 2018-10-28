@@ -11,10 +11,6 @@ import java.util.List;
 public class FlightService {
     private FlightRepository flightRepository;
 
-    public List<Flight> findAll() {
-        return this.flightRepository.findAll();
-    }
-
     public List<Flight> findAllByDate(String date) {
         return flightRepository.findAllByDate(date);
     }

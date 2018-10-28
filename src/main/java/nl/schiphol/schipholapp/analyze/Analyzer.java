@@ -36,7 +36,7 @@ public class Analyzer {
         Map<Character, Integer> flightsByPier = new HashMap<>();
 
         List<Flight> flights = this.flightService.findAllByDate(date);
-        log.info("Found {} flights", flights.size());
+        log.info("Found {} flights on date {}", flights.size(), date);
 
         char pier;
         for (Flight flight : flights) {
