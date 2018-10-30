@@ -43,6 +43,7 @@ public class FlightCollectorTest {
 
     @Test
     public void testCreateFlightObject() throws ParseException {
+        long id = 1L;
         String flightName = "The Netherlands";
         String destination = "SAW";
         String gate = "D44";
@@ -54,6 +55,7 @@ public class FlightCollectorTest {
         JSONObject route = new JSONObject();
         route.put("destinations", destinations);
 
+        when(this.jsonObject.get("id")).thenReturn(id);
         when(this.jsonObject.get("flightName")).thenReturn(flightName);
         when(this.jsonObject.get("destination")).thenReturn(destination);
         when(this.jsonObject.get("gate")).thenReturn(gate);
