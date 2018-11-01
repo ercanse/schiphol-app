@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -33,7 +34,15 @@ public class AnalyzerTest {
     }
 
     @Test
-    public void test() {
+    public void testCalculateFlightsByPierOnDate() {
+        String date = "2018-01-01";
+        Map<Character, Integer> result = this.analyzer.calculateFlightsByPierOnDate(date);
+        assertTrue(result.containsKey('D'));
+        assertEquals(1, (int) result.get('D'));
+    }
+
+    @Test
+    public void testGetFlightsByPierOnDate() {
         String date = "2018-01-01";
         List<Map> results = this.analyzer.getFlightsByPierOnDate(date);
 
