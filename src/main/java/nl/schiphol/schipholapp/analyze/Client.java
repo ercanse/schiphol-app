@@ -23,17 +23,30 @@ import java.util.Properties;
 @Component
 public class Client {
     private final Logger log = LoggerFactory.getLogger(Client.class);
+
     private final String configFile = "config/config.properties";
+
+    private final String appIdProperty = "appId";
+    private final String appKeyProperty = "appKey";
+    private final String resourceVersionHeader = "ResourceVersion";
+    private final String defaultCharSet = "UTF-8";
+
+    private final String requestUrl = "https://api.schiphol.nl/public-flights/%s?app_id=%s&app_key=%s&page=%s";
+
     private final int maxRequestsPerMinute = 200;
     private final int waitPeriod = 60000;
+
+    private HttpClient httpClient;
 
     private String appId;
     private String appKey;
 
-    private int totalPages = 1;
+    private int totalPages;
 
     public Client() {
         this.loadProperties();
+        this.httpClient = HttpClients.createDefault();
+        this.totalPages = 1;
     }
 
     private void loadProperties() {
@@ -41,8 +54,8 @@ public class Client {
         try {
             InputStream input = new FileInputStream(this.configFile);
             properties.load(input);
-            this.appId = properties.getProperty("appId");
-            this.appKey = properties.getProperty("appKey");
+            this.appId = properties.getProperty(this.appIdProperty);
+            this.appKey = properties.getProperty(this.appKeyProperty);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -74,10 +87,10 @@ public class Client {
     }
 
     private HttpResponse getResponse(String resource, String apiVersion, int pageNumber) throws IOException {
-        HttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet("https://api.schiphol.nl/public-flights/" + resource + "?app_id=" + appId + "&app_key=" + appKey + "&page=" + pageNumber);
-        request.addHeader("ResourceVersion", apiVersion);
-        return httpClient.execute(request);
+        String requestUrl = String.format(this.requestUrl, resource, this.appId, this.appKey, pageNumber);
+        HttpGet request = new HttpGet(requestUrl);
+        request.addHeader(this.resourceVersionHeader, apiVersion);
+        return this.httpClient.execute(request);
     }
 
     private JSONArray getData(String resource, HttpResponse httpResponse) throws IOException, ParseException {
@@ -93,7 +106,7 @@ public class Client {
             this.totalPages = Integer.parseInt(lastPageNumberString);
         }
 
-        String responseBody = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+        String responseBody = EntityUtils.toString(httpResponse.getEntity(), this.defaultCharSet);
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
         return (JSONArray) jsonObject.get(resource);
