@@ -5,11 +5,16 @@ import nl.schiphol.schipholapp.repository.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class FlightService {
     private FlightRepository flightRepository;
+
+    public List<Date> getDates() {
+        return flightRepository.getDates();
+    }
 
     public List<Flight> findAllByDate(String date) {
         return flightRepository.findAllByDate(date);
