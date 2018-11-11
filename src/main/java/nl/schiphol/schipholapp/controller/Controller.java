@@ -26,9 +26,17 @@ public class Controller {
 
     @RequestMapping("/getDates")
     @CrossOrigin("*")
-    public ResponseEntity<List<Date>> getFlightsByPierOnDate() {
+    public ResponseEntity<List<Date>> getDates() {
         log.info("getDates");
         List<Date> results = this.flightService.getDates();
+        return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
+    @RequestMapping("/getDestinationsByPierOnDate")
+    @CrossOrigin("*")
+    public ResponseEntity<List<Map>> getDestinationsByPierOnDate(@RequestParam("date") String date) {
+        log.info("getDestinationsByPierOnDate for date {}", date);
+        List<Map> results = this.analyzer.getDestinationsByPierOnDate(date);
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
