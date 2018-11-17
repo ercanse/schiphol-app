@@ -18,27 +18,26 @@ public class Analyzer {
 
     private FlightService flightService;
 
-    public List<Map> getDestinationsByPierOnDate(String date) {
-        List<Map> results = new ArrayList<>();
-        this.calculateDestinationsByPierOnDate(date);
+    public Map getDestinationsByPierOnDate(String date) {
+        Map results = this.calculateDestinationsByPierOnDate(date);
         return results;
     }
 
-    public List<Map> calculateDestinationsByPierOnDate(String date) {
-        List<Map> results = new ArrayList<>();
-
-        List<Flight> flights = this.flightService.findAllByDate(date);
+    public Map calculateDestinationsByPierOnDate(String date) {
+        List<Object[]> flights = this.flightService.findAllWithDestinationByDate(date);
 
         Map<Character, Map<String, Integer>> flightsByPier = new HashMap<>();
         char pier;
-        for (Flight flight : flights) {
-            String iata = flight.getDestination();
+        for (Object[] flight : flights) {
+            String gate = (String) flight[0];
+            String country = (String) flight[1];
+            log.info("gate: {}, country: {}", gate, country);
 
-            pier = flight.getGate().charAt(0);
+            pier = gate.charAt(0);
             flightsByPier.putIfAbsent(pier, new HashMap<>());
 
-            flightsByPier.get(pier).putIfAbsent(iata, 0);
-            flightsByPier.get(pier).put(iata, flightsByPier.get(pier).get(iata) + 1);
+            flightsByPier.get(pier).putIfAbsent(country, 0);
+            flightsByPier.get(pier).put(country, flightsByPier.get(pier).get(country) + 1);
         }
 
         for (Map.Entry entry : flightsByPier.entrySet()) {
@@ -46,7 +45,7 @@ public class Analyzer {
             log.info("Destinations: {}\n", entry.getValue());
         }
 
-        return results;
+        return flightsByPier;
     }
 
     public List<Map> getFlightsByPierOnDate(String date) {

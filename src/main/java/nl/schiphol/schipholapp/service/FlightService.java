@@ -20,6 +20,10 @@ public class FlightService {
         return flightRepository.findAllByDate(date);
     }
 
+    public List<Object[]> findAllWithDestinationByDate(String date) {
+        return flightRepository.getFlightsWithDestinationOnDate(date);
+    }
+
     public void save(Flight Flight) {
         this.flightRepository.save(Flight);
     }

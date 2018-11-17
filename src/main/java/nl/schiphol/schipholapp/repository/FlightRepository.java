@@ -14,4 +14,11 @@ public interface FlightRepository extends JpaRepository<Flight, Integer> {
 
     @Query(value = "SELECT * FROM flight f WHERE f.schedule_date = :scheduleDate", nativeQuery = true)
     List<Flight> findAllByDate(@Param("scheduleDate") String date);
+
+    @Query(value = "" +
+            "SELECT f.gate, d.country " +
+            "FROM flight f " +
+            "JOIN destination d ON f.destination = d.iata " +
+            "WHERE f.schedule_date = :scheduleDate", nativeQuery = true)
+    List<Object[]> getFlightsWithDestinationOnDate(@Param("scheduleDate") String date);
 }
