@@ -19,8 +19,7 @@ public class Analyzer {
     private FlightService flightService;
 
     public Map getDestinationsByPierOnDate(String date) {
-        Map results = this.calculateDestinationsByPierOnDate(date);
-        return results;
+        return this.calculateDestinationsByPierOnDate(date);
     }
 
     public Map calculateDestinationsByPierOnDate(String date) {
@@ -31,18 +30,12 @@ public class Analyzer {
         for (Object[] flight : flights) {
             String gate = (String) flight[0];
             String country = (String) flight[1];
-            log.info("gate: {}, country: {}", gate, country);
 
             pier = gate.charAt(0);
             flightsByPier.putIfAbsent(pier, new HashMap<>());
 
             flightsByPier.get(pier).putIfAbsent(country, 0);
             flightsByPier.get(pier).put(country, flightsByPier.get(pier).get(country) + 1);
-        }
-
-        for (Map.Entry entry : flightsByPier.entrySet()) {
-            log.info("Pier: {}", entry.getKey());
-            log.info("Destinations: {}\n", entry.getValue());
         }
 
         return flightsByPier;
