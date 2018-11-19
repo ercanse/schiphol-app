@@ -1,6 +1,6 @@
 package nl.schiphol.schipholapp.collect;
 
-import nl.schiphol.schipholapp.analyze.Client;
+import nl.schiphol.schipholapp.web.Client;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

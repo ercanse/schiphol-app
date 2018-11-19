@@ -1,4 +1,4 @@
-package nl.schiphol.schipholapp.analyze;
+package nl.schiphol.schipholapp.web;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
