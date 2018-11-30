@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages = {"nl.schiphol.schipholapp.analyze", "nl.schiphol.schipholapp.collect",
-        "nl.schiphol.schipholapp.service", "nl.schiphol.schipholapp.controller"})
+        "nl.schiphol.schipholapp.service", "nl.schiphol.schipholapp.controller", "nl.schiphol.schipholapp.web"})
 @EntityScan("nl.schiphol.schipholapp.entity")
 @EnableJpaRepositories("nl.schiphol.schipholapp.repository")
 public class Application {
