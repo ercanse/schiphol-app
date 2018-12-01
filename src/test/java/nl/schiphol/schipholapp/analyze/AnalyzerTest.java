@@ -22,23 +22,48 @@ public class AnalyzerTest {
     @Mock
     private FlightService flightService;
 
+    private char pier;
+
+    private String gate;
+
+    private String country;
+
     @Before
     public void setUp() {
+        this.pier = 'D';
+        this.gate = "D44";
+        this.country = "Turkey";
         Flight flight = this.createFlight();
 
         this.flightService = mock(FlightService.class);
         when(this.flightService.findAllByDate(anyString())).thenReturn(Collections.singletonList(flight));
+
+        Object[] results = new Object[2];
+        results[0] = this.gate;
+        results[1] = this.country;
+        when(this.flightService.findAllWithDestinationByDate(anyString())).thenReturn(Collections.singletonList(results));
 
         this.analyzer = new Analyzer();
         this.analyzer.setFlightService(this.flightService);
     }
 
     @Test
+    public void testCalculateDestinationsByPierOnDate() {
+        String date = "2018-01-01";
+        Map<Character, Map<String, Integer>> result = this.analyzer.calculateDestinationsByPierOnDate(date);
+        assertTrue(result.containsKey(this.pier));
+
+        Map<String, Integer> map = result.get(this.pier);
+        assertTrue(map.containsKey(this.country));
+        assertEquals((int) map.get(this.country), 1);
+    }
+
+    @Test
     public void testCalculateFlightsByPierOnDate() {
         String date = "2018-01-01";
         Map<Character, Integer> result = this.analyzer.calculateFlightsByPierOnDate(date);
-        assertTrue(result.containsKey('D'));
-        assertEquals(1, (int) result.get('D'));
+        assertTrue(result.containsKey(this.pier));
+        assertEquals(1, (int) result.get(this.pier));
     }
 
     @Test
@@ -54,7 +79,7 @@ public class AnalyzerTest {
 
     private Flight createFlight() {
         Flight flight = mock(Flight.class);
-        when(flight.getGate()).thenReturn("D44");
+        when(flight.getGate()).thenReturn(this.gate);
         return flight;
     }
 }
