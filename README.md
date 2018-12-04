@@ -14,3 +14,9 @@ root of the project, in the format:
 appId = _your_app_id_
 <br />
 appKey = _your_app_key_
+
+## Running
+The application can be run in three different modes:
+1. As a web server: run the main class (`nl.schiphol.schipholapp.Application`) without arguments
+2. To collect destinations: run the main class with `destinations` as an argument
+3. To collect flights: run the main class with `flights` as an argument
