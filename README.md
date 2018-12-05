@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/S-Ercan/schiphol-app.svg?branch=develop)](https://travis-ci.org/S-Ercan/schiphol-app)
+[![Build Status](https://travis-ci.org/S-Ercan/schiphol-app.svg?branch=master)](https://travis-ci.org/S-Ercan/schiphol-app)
 
 # schiphol-app
 An application to collect and analyze flight data using the Schiphol API.
