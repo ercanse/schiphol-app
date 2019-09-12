@@ -23,11 +23,11 @@ public class Application {
             switch (mode) {
                 case "destinations":
                     Application.setResource("destinations");
-                    Application.setApiVersion("v1");
+                    Application.setApiVersion("v4");
                     break;
                 case "flights":
                     Application.setResource("flights");
-                    Application.setApiVersion("v3");
+                    Application.setApiVersion("v4");
                     break;
                 default:
                     break;
