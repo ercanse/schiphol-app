@@ -32,7 +32,7 @@ public class Client {
     private final String acceptHeader = "Accept";
     private final String acceptHeaderValue = "application/json";
     private final String appIdHeader = "app_id";
-    private final String appKeyHeader = "app_key_header";
+    private final String appKeyHeader = "app_key";
     private final String resourceVersionHeader = "ResourceVersion";
     private final String defaultCharSet = "UTF-8";
 
