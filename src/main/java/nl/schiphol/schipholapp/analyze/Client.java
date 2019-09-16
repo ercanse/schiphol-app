@@ -28,10 +28,15 @@ public class Client {
 
     private final String appIdProperty = "appId";
     private final String appKeyProperty = "appKey";
+
+    private final String acceptHeader = "Accept";
+    private final String acceptHeaderValue = "application/json";
+    private final String appIdHeader = "app_id";
+    private final String appKeyHeader = "app_key_header";
     private final String resourceVersionHeader = "ResourceVersion";
     private final String defaultCharSet = "UTF-8";
 
-    private final String requestUrl = "https://api.schiphol.nl/public-flights/%s?app_id=%s&app_key=%s&page=%s";
+    private final String requestUrl = "https://api.schiphol.nl/public-flights/%s?page=%s";
 
     private final int maxRequestsPerMinute = 200;
     private final int waitPeriod = 60000;
@@ -87,8 +92,11 @@ public class Client {
     }
 
     private HttpResponse getResponse(String resource, String apiVersion, int pageNumber) throws IOException {
-        String requestUrl = String.format(this.requestUrl, resource, this.appId, this.appKey, pageNumber);
+        String requestUrl = String.format(this.requestUrl, resource, pageNumber);
         HttpGet request = new HttpGet(requestUrl);
+        request.addHeader(this.acceptHeader, acceptHeaderValue);
+        request.addHeader(this.appIdHeader, appId);
+        request.addHeader(this.appKeyHeader, appKey);
         request.addHeader(this.resourceVersionHeader, apiVersion);
         return this.httpClient.execute(request);
     }
