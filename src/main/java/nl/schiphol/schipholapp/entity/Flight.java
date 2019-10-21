@@ -12,7 +12,7 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private long apiId;
+    private String apiId;
 
     private String gate;
 
@@ -42,11 +42,11 @@ public class Flight {
         this.id = id;
     }
 
-    public long getApiId() {
+    public String getApiId() {
         return apiId;
     }
 
-    public void setApiId(long apiId) {
+    public void setApiId(String apiId) {
         this.apiId = apiId;
     }
 

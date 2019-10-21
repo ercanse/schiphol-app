@@ -64,7 +64,7 @@ public class FlightCollector extends Collector {
         }
 
         Flight flight = new Flight();
-        flight.setApiId((long) flightObject.get("id"));
+        flight.setApiId(flightObject.get("id").toString());
         flight.setGate(gateObject.toString());
         flight.setFlightName(flightObject.get("flightName").toString());
 
