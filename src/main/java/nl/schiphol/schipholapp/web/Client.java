@@ -47,6 +47,7 @@ public class Client {
     private String appKey;
 
     private int totalPages;
+    private boolean totalPagesSet;
 
     public Client() {
         this.loadProperties();
@@ -104,7 +105,7 @@ public class Client {
     private JSONArray getData(String resource, HttpResponse httpResponse) throws IOException, ParseException {
         Header linkHeader = httpResponse.getHeaders("Link")[0];
         String headerValue = linkHeader.getValue();
-        if (headerValue.contains("last")) {
+        if (!totalPagesSet && headerValue.contains("last")) {
             String[] headerValues = linkHeader.getValue().split(",");
             String lastPageLink = headerValues[0].contains("last") ? headerValues[0] : headerValues[1];
 
@@ -112,6 +113,7 @@ public class Client {
                     lastPageLink.indexOf("page=") + "page=".length(),
                     lastPageLink.indexOf(">"));
             this.totalPages = Integer.parseInt(lastPageNumberString);
+            this.totalPagesSet = true;
         }
 
         String responseBody = EntityUtils.toString(httpResponse.getEntity(), this.defaultCharSet);
