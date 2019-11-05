@@ -18,4 +18,12 @@ node {
     stage('Test') {
         sh 'mvn test'
     }
+
+    stage('Package') {
+        sh 'mvn package'
+    }
+
+    stage('Copy artifact') {
+        sh 'cp target/schiphol* /home/ubuntu/artifacts/'
+    }
 }

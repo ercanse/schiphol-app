@@ -24,8 +24,8 @@ public class FlightService {
         return flightRepository.getFlightsWithDestinationOnDate(date);
     }
 
-    public void save(Flight Flight) {
-        this.flightRepository.save(Flight);
+    public void save(Flight flight) {
+        this.flightRepository.save(flight);
     }
 
     @Autowired
